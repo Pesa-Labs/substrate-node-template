@@ -29,8 +29,4 @@ sp-runtime = { default-features = false, version = '2.0.0' }
 
 [features]
 default = ['std']
-std = [
-    'codec/std',
-    'frame-support/std',
-    'frame-system/std',
-]
+std = ['codec/std', 'frame-support/std', 'frame-system/std']
