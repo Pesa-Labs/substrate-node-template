@@ -245,6 +245,39 @@ impl pallet_balances::Trait for Runtime {
 }
 
 parameter_types! {
+    // Choose a fee that incentivizes desireable behavior.
+    pub const PesaReservationFee: u128 = 5;
+    pub const MinPesaLength: usize = 8;
+    // Maximum bounds on storage are important to secure your chain.
+    pub const MaxPesaLength: usize = 32;
+}
+
+impl pallet_pesa::Trait for Runtime {
+    // The Balances pallet implements the ReservableCurrency trait.
+    // https://substrate.dev/rustdocs/v2.0.0/pallet_balances/index.html#implementations-2
+    type Currency = pallet_balances::Module<Runtime>;
+
+    // Use the PesaReservationFee from the parameter_types block.
+    type ReservationFee = PesaReservationFee;
+
+	// No action is taken when deposits are forfeited.
+	type Slashed = ();
+	
+    // Configure the FRAME System Root origin as the Pesa pallet admin.
+    // https://substrate.dev/rustdocs/v2.0.0/frame_system/enum.RawOrigin.html#variant.Root
+    type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+
+    // Use the MinPesaLength from the parameter_types block.
+    type MinLength = MinPesaLength;
+
+    // Use the MaxPesaLength from the parameter_types block.
+    type MaxLength = MaxPesaLength;
+
+    // The ubiquitous event type.
+    type Event = Event;
+}
+
+parameter_types! {
 	pub const TransactionByteFee: Balance = 1;
 }
 
@@ -283,6 +316,7 @@ construct_runtime!(
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
 		// Include the custom logic from the template pallet in the runtime.
 		TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
+		Pesa: pallet_pesa::{Module, Call, Storage, Event<T>},
 	}
 );
 
